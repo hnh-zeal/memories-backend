@@ -80,26 +80,42 @@ export const deletePost = async (req, res) => {
 export const likePost = async (req, res) => {
     const { id } = req.params;
 
-    if (!req.userId) return res.json({ message: 'Unauthenticated' });
+    try {
+        if (!req.userId) return res.json({ message: 'Unauthenticated' });
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
 
-    const post = await PostMessage.findById(id);
+        const post = await PostMessage.findById(id);
 
-    const index = post.likes.findIndex((id) => id === String(req.userId));
+        const index = post.likes.findIndex((id) => id === String(req.userId));
 
-    if (index === -1) {
-        // like the post
-        post.likes.push(req.userId);
-    } else {
-        // dislike the post
-        post.likes = post.likes.filter((id) => id !== String(req.userId));
+        if (index === -1) {
+            // like the post
+            post.likes.push(req.userId);
+        } else {
+            // dislike the post
+            post.likes = post.likes.filter((id) => id !== String(req.userId));
+        }
+        const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        res.status(404).json(error);
     }
 
-    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
-
-    res.json(updatedPost);
 }
 
+export const commentPost = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+    try {
+        const post = await PostMessage.findById(id);
+        post.comments.push(value);
+        
+        const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        res.status(404).json({ message: error });
+    }
+}
 
 export default router;
