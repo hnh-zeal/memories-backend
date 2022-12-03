@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
   res.send('Hello to Backend API!');
 })
 
-mongoose.connect(mongodb+srv://zeal:zeal123@project-dev-cluster.hqvcenr.mongodb.net/express_oauth?retryWrites=true&w=majority, {
+mongoose.connect('mongodb+srv://zeal:zeal123@project-dev-cluster.hqvcenr.mongodb.net/express_oauth?retryWrites=true&w=majority', {
   // useNewUrlParser: true, 
   // useUnifiedTopology: true 
 }).then(() => app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`)))
